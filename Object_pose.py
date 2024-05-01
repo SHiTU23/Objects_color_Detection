@@ -66,3 +66,30 @@ if corners:
             cv2.putText(img, f"Position {x}, {y} mm", (int(x - 500), int(y)), cv2.FONT_HERSHEY_PLAIN, 2, (100, 200, 0), 2)
             cv2.putText(img, f"Orientation is {angle} degrees", (int(x - 100), int(y + 10)), cv2.FONT_HERSHEY_PLAIN, 2, (100, 200, 0), 2)
             cv2.circle(img,(int(x), int(y)),1,(255,255,0),1)
+
+
+number_obj = len(objs_position)
+obj_colors = ''
+for i in range(number_obj):
+    if objs_position[i][0] not in obj_colors:
+        obj_colors = obj_colors + ', ' + objs_position[i][0]
+
+
+choose_black = "choose 'k' for black" if 'Black' in obj_colors else ''
+
+### requesting ordering the colors of detected objects
+order_colors = input(f'we\'ve got {number_obj} with colors of "{obj_colors}", please choose your order {choose_black} >>')
+print(order_colors)
+
+output = f'{number_obj};'
+
+for col in range(len(order_colors)):
+    for obj in range(number_obj):
+        if order_colors[col] == 'K':
+            if 'Black' == objs_position[obj][0]:
+                output = output + objs_position[obj][1] + ';'
+        else:
+            if order_colors[col] == objs_position[obj][0][0]:
+                output = output + objs_position[obj][1] + ';'
+
+print(output)
