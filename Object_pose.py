@@ -78,7 +78,7 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
                  (object_height < HIGHT_UPPER_BAND and object_height > HIGHT_LOWER_BAND)) or 
                 ((object_height < WIDTH_UPPER_BAND and object_height > WIDTH_LOWER_BAND) and 
                  (object_width  < HIGHT_UPPER_BAND and object_width  > HIGHT_LOWER_BAND))):
-                objs_position.append([object_color,f"{object_x},{object_y},{angle}"])
+                objs_position.append([object_color,object_x,object_y,angle])
 
                 cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
                 cv2.polylines(image, [box], True, (255, 0, 0), 2)
@@ -129,7 +129,7 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
             choose_black = "choose 'k' for black" if 'Black' in obj_colors else ''
             ### requesting ordering the colors of detected objects
             order_colors = (input(f'we\'ve got {number_obj} with colors of "{obj_colors}", please choose your order {choose_black} >>')).upper()
-            
+            print(objs_position)
 
             for col in range(len(order_colors)):
                 for obj in range(number_obj):
@@ -137,7 +137,7 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
                         if 'Black' == objs_position[obj][0]:
                             output.append(objs_position[obj]) 
                     else:
-                        if order_colors[col] == objs_position[obj][0][0]:
+                        if order_colors[col] == objs_position[obj][0][0] and objs_position[obj][0] != 'Black':
                             output.append(objs_position[obj]) 
             return (output)
 
