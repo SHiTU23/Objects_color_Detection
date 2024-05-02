@@ -16,18 +16,20 @@ def img_show(img):
 # cap = cv2.VideoCapture(1,cv2.CAP_DSHOW)
 # _,image = cap.read() 
 
-def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_length_in_mm):
+def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_length_in_mm, image_show='all'):
     """
     mode : '' /'color_order' / 'red' / 'green' / 'blue' 
     hight_range_in_mm : (hight_lowerband, hight_upperBand) = (10,20)
     width_range_in_mm : (width_lowerband, width_upperBand) = (10,20)
     Aruco_code : cv2.aruco.DICT_5X5_50
     Aruco_length : the length of each side of the arocu marker
+    image_show : 'all' / 'center_point' / 'dimensions' / 'angle' / 'color'
     """
 
     NUMBER_OF_AROCU_SIDES = 4
     HIGHT_LOWER_BAND, HIGHT_UPPER_BAND = hight_range_in_mm
     WIDTH_LOWER_BAND, WIDTH_UPPER_BAND = width_range_in_mm
+    BLACK_FONT = (0,0,0)
     objs_position = []
 
     # Load Aruco detector
@@ -76,12 +78,23 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
 
                 cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
                 cv2.polylines(image, [box], True, (255, 0, 0), 2)
-                cv2.putText(image, f"h:{object_height}, w:{object_width}", (x-100, y + 30), cv2.FONT_HERSHEY_PLAIN, 2, (100, 200, 0), 2)            
-                # cv2.putText(image, f"color: {object_color}", (x , y-50), cv2.FONT_HERSHEY_PLAIN, 2, (100, 200, 0), 2)
-                # cv2.putText(image, f"Position {x}, {y} mm", (x - 500, y), cv2.FONT_HERSHEY_PLAIN, 2, (100, 200, 0), 2)
-                # cv2.putText(image, f"Orientation is {angle} degrees", (x - 100, y + 10), cv2.FONT_HERSHEY_PLAIN, 2, (100, 200, 0), 2)
                 cv2.circle(image,(x, y),1,(255,255,0),1)
-
+                
+                match image_show: 
+                    case 'all':
+                        cv2.putText(image, f"color: {object_color}", (x-100 , y-50), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)
+                        cv2.putText(image, f"angle: {angle}", (x-100, y-25), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)
+                        cv2.putText(image, f"center pose: {x}, {y} mm", (x-100, y), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)
+                        cv2.putText(image, f"h:{object_height}, w:{object_width}", (x-100, y+25), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)            
+                    case 'center_point':
+                        cv2.putText(image, f"center pose: {x}, {y} mm", (x-100, y), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)
+                    case 'dimensions':
+                        cv2.putText(image, f"h:{object_height}, w:{object_width}", (x-40, y), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)            
+                    case 'angle':
+                        cv2.putText(image, f"angle: {angle}", (x-50, y), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)
+                    case 'color':
+                        cv2.putText(image, f"color: {object_color}", (x-50 , y), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)
+                        
         img_show(image)
 
     # number_obj = len(objs_position)
