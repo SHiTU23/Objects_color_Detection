@@ -16,13 +16,13 @@ def img_show(img):
 # cap = cv2.VideoCapture(1,cv2.CAP_DSHOW)
 # _,image = cap.read() 
 
-def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_length_in_mm, image_show='all'):
+def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_length_in_mm, mode='', image_show='all'):
     """
-    mode : '' /'color_order' / 'red' / 'green' / 'blue' 
     hight_range_in_mm : (hight_lowerband, hight_upperBand) = (10,20)
     width_range_in_mm : (width_lowerband, width_upperBand) = (10,20)
     Aruco_code : cv2.aruco.DICT_5X5_50
     Aruco_length : the length of each side of the arocu marker
+    mode : '' /'color_order' / 'red' / 'green' / 'blue' 
     image_show : 'all' / 'center_point' / 'dimensions' / 'angle' / 'color'
     """
 
@@ -66,7 +66,7 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
             object_y = int(y / pixel_mm_ratio)
             box = np.int0(box)
 
-            (b,g,r) = image[int(y), int(x)]
+            (b,g,r) = image[y, x]
             object_color = color(r, g, b)
 
             ### BRIK DIMENSSIONS
@@ -95,30 +95,33 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
                     case 'color':
                         cv2.putText(image, f"color: {object_color}", (x-50 , y), cv2.FONT_HERSHEY_PLAIN, 1, BLACK_FONT, 2)
                         
-        img_show(image)
-
-    # number_obj = len(objs_position)
-    # obj_colors = ''
-    # for i in range(number_obj):
-    #     if objs_position[i][0] not in obj_colors:
-    #         obj_colors = obj_colors + ', ' + objs_position[i][0]
+        
 
 
-    # choose_black = "choose 'k' for black" if 'Black' in obj_colors else ''
+    match mode:
+        case '':
+            img_show(image)
+            return (objs_position)
+        
+        case 'color_order':
+            img_show(image)
+            number_obj = len(objs_position)
+            obj_colors = ''
+            for i in range(number_obj):
+                if objs_position[i][0] not in obj_colors:
+                    obj_colors = obj_colors + ', ' + objs_position[i][0]
 
-    # ### requesting ordering the colors of detected objects
-    # order_colors = input(f'we\'ve got {number_obj} with colors of "{obj_colors}", please choose your order {choose_black} >>')
-    # print(order_colors)
+            choose_black = "choose 'k' for black" if 'Black' in obj_colors else ''
+            ### requesting ordering the colors of detected objects
+            order_colors = (input(f'we\'ve got {number_obj} with colors of "{obj_colors}", please choose your order {choose_black} >>')).upper()
+            output = f'{number_obj};'
 
-    # output = f'{number_obj};'
-
-    # for col in range(len(order_colors)):
-    #     for obj in range(number_obj):
-    #         if order_colors[col] == 'K':
-    #             if 'Black' == objs_position[obj][0]:
-    #                 output = output + objs_position[obj][1] + ';'
-    #         else:
-    #             if order_colors[col] == objs_position[obj][0][0]:
-    #                 output = output + objs_position[obj][1] + ';'
-
-    return (objs_position)
+            for col in range(len(order_colors)):
+                for obj in range(number_obj):
+                    if order_colors[col] == 'K':
+                        if 'Black' == objs_position[obj][0]:
+                            output = output + objs_position[obj][1] + ';'
+                    else:
+                        if order_colors[col] == objs_position[obj][0][0]:
+                            output = output + objs_position[obj][1] + ';'
+            return (output)
