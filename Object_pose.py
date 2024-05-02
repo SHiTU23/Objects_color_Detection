@@ -22,15 +22,19 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
     width_range_in_mm : (width_lowerband, width_upperBand) = (10,20)
     Aruco_code : cv2.aruco.DICT_5X5_50
     Aruco_length : the length of each side of the arocu marker
-    mode : '' /'color_order' / 'red' / 'green' / 'blue' 
+    mode : '' /'color_order' / 'red' / 'green' / 'blue' / 'black' 
     image_show : 'all' / 'center_point' / 'dimensions' / 'angle' / 'color'
     """
+
+    ### lower case the input for "mode"
+    mode = mode.lower()
 
     NUMBER_OF_AROCU_SIDES = 4
     HIGHT_LOWER_BAND, HIGHT_UPPER_BAND = hight_range_in_mm
     WIDTH_LOWER_BAND, WIDTH_UPPER_BAND = width_range_in_mm
     BLACK_FONT = (0,0,0)
     objs_position = []
+    output = []
 
     # Load Aruco detector
     parameters = cv2.aruco.DetectorParameters_create()
@@ -102,7 +106,18 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
         case '':
             img_show(image)
             return (objs_position)
-        
+        case 'red':
+            img_show(image)
+            return obj_finder_byColor(objs_position, 'Red')
+        case 'green':
+            img_show(image)
+            return obj_finder_byColor(objs_position, 'Green')
+        case 'blue':
+            img_show(image)
+            return obj_finder_byColor(objs_position, 'Blue')
+        case 'black':
+            img_show(image)
+            return obj_finder_byColor(objs_position, 'Black')
         case 'color_order':
             img_show(image)
             number_obj = len(objs_position)
@@ -114,14 +129,23 @@ def obj_pose(hight_range_in_mm, width_range_in_mm, image, Aruco_type, Aruco_leng
             choose_black = "choose 'k' for black" if 'Black' in obj_colors else ''
             ### requesting ordering the colors of detected objects
             order_colors = (input(f'we\'ve got {number_obj} with colors of "{obj_colors}", please choose your order {choose_black} >>')).upper()
-            output = f'{number_obj};'
+            
 
             for col in range(len(order_colors)):
                 for obj in range(number_obj):
                     if order_colors[col] == 'K':
                         if 'Black' == objs_position[obj][0]:
-                            output = output + objs_position[obj][1] + ';'
+                            output.append(objs_position[obj]) 
                     else:
                         if order_colors[col] == objs_position[obj][0][0]:
-                            output = output + objs_position[obj][1] + ';'
+                            output.append(objs_position[obj]) 
             return (output)
+
+
+def obj_finder_byColor(objs_position, color_mode):
+    output = []
+    number_obj = len(objs_position)
+    for obj in range(number_obj):
+        if objs_position[obj][0] == color_mode:
+            output.append(objs_position[obj])
+    return output 
